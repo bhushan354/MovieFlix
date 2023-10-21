@@ -21,25 +21,39 @@ function App() {
   const { url } = useSelector((state) =>
     //this state is returning reducer object from store.js
     state.home);
-    // this state.home is stored to url object with destructuring
-    console.log(url);
+  // this state.home is stored to url object with destructuring
+  console.log(url);
 
   useEffect(() => {
-    apiTesting();
+    fetchApiConfig();
   }, []);
 
-  const apiTesting = async () => {
-    fetchDataFromApi("/movie/popular").then((res) => {
+  const fetchApiConfig = async () => {
+    fetchDataFromApi("/configuration").then((res) => {
       console.log(res);
-      dispatch(getApiConfiguration(res));
+
+      const url = {
+        backdrop: res.images.secure_base_url + "original",
+        poster: res.images.secure_base_url + "original",
+        profile: res.images.secure_base_url + "original",
+      }
+
+      dispatch(getApiConfiguration(url));
     });
-  };
+  }
 
   return (
-    <div className="App">
-      App
-      {url?.total_pages}
-    </div>
+    <BrowserRouter>
+      {/* <Header /> */}
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/:mediaTyoe/:id' element={<Details />} />
+        <Route path="/search/:query" element={<SearchResult />} />
+        <Route path='/explore/:mediaType' element={<Explore />} />
+        <Route path='*' element={<PageNotFound />} />
+      </Routes>
+      {/* <Footer /> */}
+    </BrowserRouter>
   )
 }
 
